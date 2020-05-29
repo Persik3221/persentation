@@ -1,0 +1,213 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Operator This</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/black.css" id="theme">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css" id="highlight-theme">
+	</head>
+	<body>
+		<div class="reveal concave">
+			<div class="slides">
+				<section>
+					<h1>What is this?</h1>
+					<h3>Operator this</h3>
+					<p>
+						<small>Created by <a href="https://github.com/Persik3221">Persik1223</a></small>
+					</p>
+				</section>
+				<section>
+					<section>
+						<h2>THIS is</h2>
+						<p>Operator "this" - context reference.</p>
+						<span>In different modes (strict or not) it refers to different objects or anything.</span>
+					</section>
+					<section>
+						<h2>Strict mode or not</h2>
+						<p>When we 'use strict' operator "this" can refers on anything, but in not strict mode "this" always refers on object.</p>
+						<p>If we call this not in function, operator refers on Global Object. </p>	
+					</section>
+					<section>
+						<h2>Example of Global Context:</h2>
+						<pre class="fragment fade-in-then-out" data-id="code-animation">
+							<code class="hljs" data-trim data-line-numbers>
+								// web-page
+								console.log(this === window); // true
+								
+								a = 44;
+								
+								console.log(window.a); // 44
+
+								this.b = "qwe";
+
+								console.log(window.b); // "qwe"
+								console.log(b); // "qwe"
+							</code>
+						</pre>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>Function context</h2>
+						<p>Operator this in function depends on how the function is called. If it's called in browser, this in function will refer on Window. In Node - on Global Object. </p>	
+					</section>
+					<section>
+						<h2>Example of function context: </h2>
+						<pre class="fragment fade-up">
+							<code class="hljs" data-trim data-line-numbers>
+								function f1(){
+								   return this;
+								}
+								// web-page
+								console.log(f1() === window) // true
+
+								// node
+								console.log(f1() === global) // true
+
+								function f2(){
+								   "use strict";
+								   return this;
+								}
+								f2() === undefined; // true
+							</code>
+						</pre>
+					</section>
+					<section>
+						<h2>Arrow functions</h2>
+						<p>When we use arrow functions, operator this depends on the environment. In other words, in arrow functions operator this refers on context, where arrow function was declared. For example, arrow function was declared as method of object and this will refer on context, where object was declared. Also should to say, that we can't set context with functions like call or bind.</p>
+						<p>Will be better to see on the example:</p>
+					</section>
+					<section>
+						<h2>Example of using this in arrow functions:</h2>
+						<pre class="fragment fade-up">
+							<code class="hljs" data-trim data-line-numbers>
+								var globalObject = this;
+								var foo = (() => this);
+
+								console.log(foo() === globalObject); // true
+								
+								var obj = {foo: foo};
+								console.log(obj.foo() === globalObject); // true
+
+								console.log(foo.call(obj) === globalObject); // true
+
+								foo = foo.bind(obj);
+								console.log(foo() === globalObject); // true
+							</code>
+						</pre>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>lets try to find our context</h2>
+						<p>When we lose our context or want to initialize it, u can use some functions, like "call", "apply" or "bind".</p>
+					</section>
+					<section>
+						<h2>Call and Apply</h2>
+						<p>
+							Call and Apply are methods of Function.prototype. They call function using context and certain arguments from own arguments. Difference between apply and call consists only in way how we send arguments for callback. In apply we send array of arguments, but in call - all arguments one by one. 
+						</p>
+						<p>
+							Let's look at an example for better understanding:
+						</p>
+					</section>
+					<section>
+						<h2>Example of using call and apply:</h2>
+						<pre class="fragment fade-up">
+							<code class="hljs" data-trim data-line-numbers>
+								function add(c, d){
+								   return this.a + this.b + c + d;
+								}
+								
+								var obj = {a: 1, b: 3};
+								  
+								console.log(add.call(obj, 5, 7) === 16); // true 
+								  
+								console.log(add.apply(obj, [10, 20]) === 34); // true
+							</code>
+						</pre>
+					</section>
+					<section>
+						<h2>bind</h2>
+						<p>Bind, like call and apply, can set context of function, but does it by his own way. Bind creates new function with the given context and if "bind"'s arguments contains more then one arguments, new function will be use other arguments like his own before arguments that will be gotten when new function will be called. </p>
+						<p>Let's look at an example for better understanding: </p>
+					</section>
+					<section>
+						<h2>Example of using bind:</h2>
+						<pre class="fragment fade-up">
+							<code class="hljs" data-trim data-line-numbers>
+								this.x = 9;
+								const module = {
+								  x: 81,
+								  getX: function() { 
+								    return this.x + [].reduce.call(arguments, (ac, cv) => ac + cv, 0) ; }
+								};
+								
+								module.getX(); // 81
+
+								const getX = module.getX;
+								getX(); // 9, because of "this" refers on  Global Object
+
+								var boundGetX = getX.bind(module, 1, 2, 3);
+								boundGetX(4); // 91
+							</code>
+						</pre>
+					</section>
+				</section>
+				<section>
+					<section>
+						<h2>This and objects</h2>
+						<p>We need operator this in object methods and constructor functions for call current object (in methods) or new object (in constructors). Also here i should say, that this will refers on context where it was called.</p>
+						<p>Will be better to see on the example:</p>
+					</section>
+					<section>
+						<h2>Example of using this in objects:</h2>
+						<pre class="fragment fade-up">
+							<code class="hljs" data-trim data-line-numbers>
+								const obj = {
+								  a: 37,
+								  f1: function() { return this.a; }
+								};
+								console.log(obj.f1()); // 37
+								
+								function f2() { return this.a; }
+
+								obj.f2 = f2;
+								console.log(obj.f2()); // 37
+
+								obj.b = {g: f2, a: 42};
+								console.log(obj.b.g()); // 42
+							</code>
+						</pre>
+					</section>
+				</section>
+				<section>
+					<img src="https://lh3.googleusercontent.com/proxy/4d_RYZ1pOw0IEKp-CE_SSc3qP9ToDQjBS_fdkpOpeegF2aJ3wDXkeCgb-xygpKJRropuUM4C6_zRylh_rcRRU2A5Fo4" alt="">
+				</section>
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>
